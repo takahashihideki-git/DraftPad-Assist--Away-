@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Open - Away</title>
+  <link rel="stylesheet" type="text/css" href="css/ActivityIndicator.css" />
+  <style type="text/css">
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    font-family: sans-serif;
+  }
+  form {
+    position: relative;
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #A6AEB9;
+    border-bottom: 1px solid #5E6975;
+    -webkit-box-shadow: 0 1px 1px #7A868E;
+    background: -webkit-gradient(linear, left top, left bottom, from(#A2ABB6), to(#707D8C));
+  }
+  #search {
+    width: 100%;
+    padding-right: 25px;
+    border-color: #666;
+    font-size: 100%;
+  }
+  #clear {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    top: 4px;
+    right: 4px;
+    display: none;
+  }
+  #clear img {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 12px;
+  }
+  ul {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    margin: 0;
+    padding: 10px 20px;
+    list-style-type: none;
+    border-bottom: 1px solid #E0E0E0;
+  }
+  .item {
+    font-weight: bold;
+    font-size: 100%;
+    word-break: break-all;
+  }
+  .folder .item {
+    color: #2B4174;
+  }
+  li.selected {
+    background: -webkit-gradient(linear, left top, left bottom, from(#1BA7FB), to(#0776F2));
+    background-color: #108FF6;
+  }
+  li.selected .item,
+  li.selected .info {
+    color: #fff;
+  }
+  .info {
+    font-size: 90%;
+    color: #2B4174;
+    word-break: break-all;
+  }
+  #waiting { display: none }
+  #activityIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -10px;
+    margin-left: -10px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+  }
+  #notfound {
+    margin-top: 50%;
+    text-align: center;
+    font-size: 100%;
+    font-weight: bold;
+    color: #666;
+  }
+  #template {
+    display: none;
+  }
+  </style>
+</head>
+<body>
+
+<form id="searchbox">
+  <input id="search" type="search" placeholder="Search File or Path">
+  <div id="clear">
+    <img src="data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00-%00%00%00-%08%06%00%00%00%3A%1A%E2%9A%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%04gAMA%00%00%B1%8F%0B%FCa%05%00%00%00%20cHRM%00%00z%26%00%00%80%84%00%00%FA%00%00%00%80%E8%00%00u0%00%00%EA%60%00%00%3A%98%00%00%17p%9C%BAQ%3C%00%00%04*IDAThC%D5%98%D7N%EC%40%0C%40%F7%FE%FF%87%D0%BB%E8%E5%89%CE3MBHH%14%09DGt%98%AB%93%2BG%5Egf%E2%EC%02%BA%20%85%94%F1%D8%C7%1E%C7%E3%EC%9F%D7%D7%D7%D0%FA%CF%FFB%F8%87%C8%F9%F3%F3%B3%C5%BF%F0%1B%8E%8F%8F%8F%C0%F1%FE%FE%5E%90%FF%0Ah%E1%04%FC%D7A%03%FF%25%D0%8F%8F%8F%E1%E0%E0%20lmm%85%85%85%85077%17%FA%FB%FB%8B%83k%9E1%86%0C%B2%DD%AEn%C7%D0%BC%C0%7B%7B%7B%05P___%A3%839%CCEG'%0E4%86%26%A7%F6%F7%F7%C3%C8%C8H%23%D0%98c%E8%40%17%3A%9B%C07%82~xx%08%B3%B3%B3%5D%C3Z%07%D0%89n%2F%B8%1B%FA%FC%FC%3C%8C%8D%8D%7D9%B08%80nlx%C0%93%D0z%C9%8E%8E%8E%C2%C0%C0%C0%B7%01%0B86%B0U%07%5E%40%E7r%EA%E2%E2%E2G%805x%5D%C4%CBH%CB%8E%A3%1D%B8%BF%BF%0F%A3%A3%A3%DF%1Ea%9B%E3%D8%94%1C%B7%01-6%17%81%95%88%8B%10gjl%D3r%F6U%F2%D8Ne%40%09m%23M%1D%AD%03%98%9E%9E%0E%83%83%83%B5r1%3D%9E%80H9%B4lQ%E8%97%97%97%DA%3A%7C%7C%7C%5CD%82%1Dn~~%DE%0D%3E11%11nnn%8A%B9%D7%D7%D7ahh(9%97%3A%CE%06%A4%A1%DB%D2C%0F%D4E%99%08k%F9%E7%E7g%178%C0%BC'z%EE%CA%CAJ%D6aX%5C%D0%40%E5R%83%E8%3C%3D%3D%95%CAx%1F%EA%C0%01%BE%BB%BBk%03%A0%CD%AC%B3e%03%14%8D%F4%D5%D5%95k%A9%17%17%17%03i%E4%89%F8%F8%F8x%14x%7D%7D%DDe%0B%26m%A7%92%D3u%A9%A1W%C0%03%DE-0%F6vww%F3%D0u9f%D3%26%07%0E%F0%ED%EDm%25%25%BC%11%16%5B0e%23%DDIC%94%02%8F%E5%F0%DA%DA%9A%2B%25tp%60%CAB%7BZ%CE%DE%DE%DE%8A%E1%18%B86%C4K%D7%090%F00E%A1Q%CA%00_%1B%08j%B0%18d%13pt%AF%AE%AE%BA%23lu%D3HU%A0Q*%D0%080%C9B%5BE1h%5B%87Eg%5D9%B4%EF%89%0B%1A%2F%04%7Cxx%B8%16Z%3B%25%06l%95%10%60%D1m%C1%EBVR%3B%02S%5B%A4%05V%CE333%25t%0CN%9E%E9%B1T%95%00T%1BcC%A2%E7%B0zc%AB%A6S%14%26%1D%84%96%85%A6%BCX%B0%DC%3D_%1CR%D6%B4.%CA%1A%1F%B0l%40b%90%B3%05%8F9%60%ED%C1%A4u%97%D0%B2%8C%3B%3B%3Bnh%01%B6%8E%03%2C%865%B8%C8%A5%C0S%C1%81)%0A-%D1%B8%BC%BCtA%03L%B7%96%03%FE*p%98%92%D02055%95%05%A7%2C%D2%0Fx%80%05%5C%EA%B8%9EC%5B%8B%F3%B9%F4%9B%9C%9C%AC%D8%A9%E44J%B7%B7%B7%B3%8Ap%CA%03%DC%D3%D3%D3%A6'%06%BE%BC%BC%9C%B5%05%8B%B5U%81~%7B%7B%2B%DAL%5D%FAl%24%A8%E5%3A5%D8%E9%BC%2F%EF%D2%D2R%F9rb%87%CA%A3%E7%E2%A88%0B%032%15h%209%EC%00%1E%CAd%1B1%EE%F9%CC%DA%D8%D8(%FA%E1%1C%B0%9D%8B%2C)%B1%B9%B9Y%01fL%CB%C3%10c%2B%22-%E0%22%C0%99%CF%9CX%CD%96H%E8%B3%18%8B%3D%B3%20%1A*u%CD%1C%9A%24%CD%A3%19%CB%F4%D0%0F%E5%9A%FA%CB%12%C5%40s%F01'R%3Ab%B2%D8%C4v%8C%89%20%B7%EC%80%8D%FC%D9%D9Y%D1%E8x%C1uN6%9D%83%3C%B6%B0%99%E3%AA%40%C7%BC%3B%3C%3C%EC%08%BC)4%C0%D8%8A1%E8TqA3%E1%E4%E4%A4%E8k%9B%82x%E5%D1%7Dzz%9A%04n%CBi%B9%E1%C5Ky(%CF)sT%0B%2F%88W%0E%9D%E4%B0%87%01%96VN%901%3B%CE%3D%A5%88%92%E7%85J%C9%A1%03%5Db'%C6%A2%19d%BC%84N%01%8A%A0V%C85M%0F%8D%0C%A5%A9)%3C%ED)%B0l%E3)%FD%FA%B9%BD.%A0%9B%1CR%C3%B5%13%7C%C0%F2%D3%03%DD%1DK%CD6%2F%8Ep%CF%C1F%C4O%01%C8%A6%ECi%DD9%A6%C6%D0u%0Ez%0D%D7%E9%F9Q%E8n%60%BCs%DB%22%CDW%86wb%139%AB%B7S%3B2%EF%2F%86%5C%ED%12X%2B%815%00%00%00%00IEND%AEB%60%82" width="20" height="20" />
+  </div>
+</form>
+
+<div id="waiting"><img id="activityIndicator" src="images/ActivityIndicator.png" style="-webkit-animation-name: dashcode-activity-indicator; -webkit-animation-duration: 1s; -webkit-animation-iteration-count: infinite; -webkit-animation-timing-function: linear; " /></div>
+
+<ul id="view"></ul>
+
+<div id="template">
+  <ul>
+    <li class="folder">
+      <div class="item">{item}</div>
+      <div class="info"><span class="path">{path}</span></div>
+    </li>
+    <li class="file">
+      <div class="item">{item}</div>
+      <div class="info"><span class="path">{path}</span></div>
+    </li>
+  </ul>
+  <div id="notfound">Not Found</div>
+</div>
+
+<script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="js/jquery.parsequery.js"></script>
+<script type="text/javascript" src="js/htmlCodeTemplate.js"></script>
+<script type="text/javascript">
+
+var accessToken = localStorage[ "dp2drpbxAccessToken" ];
+var accessTokenSecret = localStorage[ "dp2drpbxAccessTokenSecret" ];
+
+var template;
+
+$( function () { 
+
+  window.location.href = 'draftpad:///webdelegate?load=prepare';
+
+});
+
+function prepare ( param ) {
+
+  if ( !accessToken || !accessTokenSecret ) {
+    alert( "Please Sign In" );
+    return;
+  }
+
+  // form
+  $( "form" ).bind( "submit", function () { return false });
+
+  // searchbox
+  $( "#search" ).bind( "search", function () { 
+    $( "#search" ).blur();
+    execute();
+  })
+  .bind( "focus keyup", function () {
+    if ( $( this ).val() ) {
+      $( "#clear" ).show();
+    }
+    else {
+      $( "#clear" ).hide();
+    }
+  })
+  .bind( "blur", function () {
+    $( "#clear" ).hide();
+  });
+
+  // clear x button
+  $( "#clear" ).bind( "mousedown", function ( e ) { 
+
+   var val = $( "#search" ).val();
+   if ( val && val.match( /\//) ) {
+     val = val.replace( /\/$/, "" ).replace( /\/[^\/]*$/, "/" );
+     $( "#search" ).val( val );
+     if ( ! val ){ $( "#clear" ).hide() }
+   }
+   else {
+     $( "#search" ).val( "" );
+     $( "#clear" ).hide();
+   }
+
+   // $( "#searchbox" )[0].reset();
+    return false;
+
+  });
+
+  // get template
+  template = new HTMLCodeTemplate( $( "#template" ) );
+
+  // input searchbox and execute
+  if ( param.text && param.text.match( /^\// ) ) {
+    $( "#search" ).val( param.text );
+    execute();
+  }
+
+}
+
+function execute () {
+
+  var keyword;
+
+  if ( !$( "#search" ).val() || $( "#search" ).val().match( /^ *$/ ) ) {
+    alert( "Input Filename or Path" );
+    return;
+  }
+  else {
+    keyword = parse( $( "#search" ).val() );
+  }
+
+  if ( !keyword.item ) {
+    dir( keyword.path );
+  }
+  else  {
+    search( keyword );
+  }
+
+}
+
+function parse ( str ) {
+
+  var path = "";
+  var item = "";
+
+  if ( str.match( /^ *(\/*.*\/)(.*) *$/ ) ) { // with path
+    path = RegExp.$1;
+    item = RegExp.$2;
+    if ( ! path.match( /^\// ) ) {
+      path = "/" + path;
+    }  
+  }
+  else {
+    item = str;
+  }
+
+  return {
+    path: path,
+    item: item
+  };
+
+}
+
+function search ( keyword ) {
+
+  $( "#view" ).empty();
+  $( "#waiting" ).show();
+
+  var url = "/search" +  keyword.path;
+  var query = keyword.item;
+
+  $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "json",
+    data: {
+      q: query,
+      oauth_token: accessToken,
+      oauth_token_secret: accessTokenSecret
+    },
+    success: function( data, textStatus, jqXHR ){
+      $( "#waiting" ).hide();
+      view( data );
+    },
+    error: function ( jqXHR, textStatus, errorThrown ) {
+      $( "#waiting" ).hide();
+      alert( textStatus );
+    }
+  });
+
+}
+
+function dir ( path ) {
+
+  $( "#view" ).empty();
+  $( "#waiting" ).show();
+
+  var url = "/list" +  path;
+
+  $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "json",
+    data: {
+      oauth_token: accessToken,
+      oauth_token_secret: accessTokenSecret
+    },
+    success: function( data, textStatus, jqXHR ){
+      $( "#waiting" ).hide();
+      view( data.contents );
+    },
+    error: function ( jqXHR, textStatus, errorThrown ) {
+      $( "#waiting" ).hide();
+      alert( textStatus );
+    }
+  });
+
+}
+
+function load ( path ) {
+
+  $( "#view" ).hide();
+  $( "#waiting" ).show();
+
+  var url = "/get" +  path;
+
+  $.ajax({
+    url: url,
+    type: "GET",
+    crossDomain: true,
+    dataType: "text",
+    data: {
+      oauth_token: accessToken,
+      oauth_token_secret: accessTokenSecret
+    },
+    success: function( data, textStatus, jqXHR ){
+
+      var text = data + "\n\n" + path;
+      window.draftpad.replace( text, 0, 0 );
+
+    },
+    error: function ( jqXHR, textStatus, errorThrown ) {
+
+      alert( textStatus );
+      $( "#view" ).show();
+
+    }
+  });
+
+}
+
+function view ( list ) {
+
+  list.sort( function ( a, b ) {
+    var pathA = a.path.toLowerCase();
+    var pathB = b.path.toLowerCase();
+    if ( pathA < pathB ) { return -1 }
+    if ( pathA > pathB ) { return 1 }
+    return 0;
+  });
+
+  var contents = "";
+
+  $.each( list, function () { 
+  
+    var isTarget = false;
+
+    if ( this.is_dir ) {
+      isTarget = true;
+    }
+    else if ( this.mime_type.match( /^text/ ) || this.path.match( /\.js$/ ) || ! this.path.match( /\./ ) ) {
+      isTarget = true;
+    }
+
+    if ( isTarget ) {
+
+      var name = parse( this.path );
+      var content = "";
+
+      if ( this.is_dir ) {
+        name.item = name.item + "/";
+        content = template.getTemplateStr( ".folder" ).main;
+      }
+      else {
+        content = template.getTemplateStr( ".file" ).main;
+      }
+
+      content = content.replace( /{item}/, name.item );
+      content = content.replace( /{path}/, name.path );
+      contents = contents + content;
+
+    }
+  
+  });
+
+  $( "#waiting" ).hide();
+  $( "#view" ).html( "<ul>" + contents + "</ul>" );
+
+  $( "li" ).bind( "touchstart touchmove touchend", function ( e ) { 
+
+    if ( e.type == "touchstart" ) { $( this ).data( "touched", 1 ) }
+    if ( e.type == "touchmove" )  { $( this ).data( "touched", 0 ) }
+    if ( e.type == "touchend" && $(this).data( "touched" ) == 1 ) {
+
+      $( this ).addClass( "selected" );
+      var selected = this;
+      setTimeout( function () { 
+        $( selected ).removeClass( "selected" );
+
+        if ( $( selected ).hasClass( "folder" ) ) {
+          $( "#search" ).val( $( selected ).find( ".path" ).text() + $( selected ).find( ".item" ).text() );
+          execute();
+        }
+        else {
+          load( $( selected ).find( ".path" ).text() + $( selected ).find( ".item" ).text() );
+        }
+
+      }, 500 );
+
+    }
+
+  });
+
+  if ( $("#view li").length == 0 ) { // Not Found
+    $( "#waiting" ).hide();
+    $( "#view" ).html( template.getTemplateStr( "#notfound" ).main );
+    return;
+  }
+
+}
+
+</script>
+</body>
+</html>

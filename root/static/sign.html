@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Sign - Away</title>
+  <link rel="stylesheet" type="text/css" href="css/ActivityIndicator.css" />
+  <style type="text/css">
+  body {
+    background-color: #fff;
+    font-family: sans-serif;
+  }
+  #waiting { display: none }
+  #activityIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -10px;
+    margin-left: -10px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+  }
+  #signin,
+  #signout {
+    display: none;
+    margin-top: 50%;
+    text-align: center;
+    font-size: 100%;
+    font-weight: bold;
+    color: #666;
+  }
+  </style>
+</head>
+<body>
+
+<div id="waiting"><img id="activityIndicator" src="images/ActivityIndicator.png" style="-webkit-animation-name: dashcode-activity-indicator; -webkit-animation-duration: 1s; -webkit-animation-iteration-count: infinite; -webkit-animation-timing-function: linear; " /></div>
+<div id="signin">Sign In.</div>
+<div id="signout">
+  Sign Out.<br />
+  <a href="http://www.dropbox.com">and Please log out Dropbox on DraftPad.</a>
+</div>
+
+<script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="js/jquery.parsequery.js"></script>
+<script type="text/javascript">
+
+$( function () { 
+
+  var params = $.parseQuery();
+
+  // redirect from dropbox authorize
+  if ( params.oauth_token && params.oauth_token_secret ) {
+    $( "#waiting" ).show();
+    setAccessToken( params );
+  }
+  else {
+  // in draftpad webdelegate
+    dispatch();
+  }
+
+});
+
+function dispatch() {
+
+  // user with access token
+  if ( localStorage[ "dp2drpbxAccessToken" ] && localStorage[ "dp2drpbxAccessTokenSecret" ] ) {
+    if ( confirm( "Sign Out?" ) ) {
+      signout();
+    }
+    else {
+      window.draftpad.close();
+    }
+  }
+  // user without access token
+  else {
+    if ( confirm( "Sign In?" ) ) {
+      window.location.href = "/auth";
+    }
+    else {
+      window.draftpad.close();
+    }
+  }
+
+}
+
+function setAccessToken ( params ) {
+
+  $( "#waiting" ).show();
+
+  localStorage[ "dp2drpbxAccessToken" ] = params.oauth_token;
+  localStorage[ "dp2drpbxAccessTokenSecret" ] = params.oauth_token_secret;
+
+  $( "#waiting" ).hide();
+  $( "#signin" ).show();
+
+}
+
+function signout () {
+
+  localStorage.removeItem( "dp2drpbxAccessToken" );
+  localStorage.removeItem( "dp2drpbxAccessTokenSecret" );
+
+  $( "#waiting" ).hide();
+  $( "#signout" ).show();
+    
+}
+
+</script>
+</body>
+</html>

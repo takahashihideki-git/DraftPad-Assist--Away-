@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Save - Away</title>
+  <link rel="stylesheet" type="text/css" href="css/ActivityIndicator.css" />
+  <style type="text/css">
+  body {
+    background-color: #fff;
+    font-family: sans-serif;
+  }
+  #waiting { display: none }
+  #activityIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -10px;
+    margin-left: -10px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+  }
+  </style>
+</head>
+<body>
+
+<div id="waiting"><img id="activityIndicator" src="images/ActivityIndicator.png" style="-webkit-animation-name: dashcode-activity-indicator; -webkit-animation-duration: 1s; -webkit-animation-iteration-count: infinite; -webkit-animation-timing-function: linear; " /></div>
+
+<script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="js/jquery.parsequery.js"></script>
+<script type="text/javascript">
+
+var accessToken = localStorage[ "dp2drpbxAccessToken" ];
+var accessTokenSecret = localStorage[ "dp2drpbxAccessTokenSecret" ];
+
+$( function () { 
+
+    window.location.href = 'draftpad:///webdelegate?load=save';
+
+});
+
+function save( param ) {
+
+  // user with access token
+  if ( accessToken && accessTokenSecret ) {
+
+    var parsed = parse( param.text );
+
+    if ( parsed.path ) {
+      post( parsed.path, parsed.body );
+    }
+    else {
+      alert( "Please input path to save" );
+      window.draftpad.replace( param.text + "\n" + "/", param.text.length + 2, 0 );
+    }
+
+  }
+  // user without access token
+  else {
+    alert( "Please Sign In" );
+  }
+
+}
+
+function post ( path, body ) {
+
+  $( "#waiting" ).show();
+
+  var url = "/put" + path;
+
+  $.ajax({
+    url: url,
+    type: "POST",
+    dataType: "json",
+    data: {
+      text: body,
+      oauth_token: accessToken,
+      oauth_token_secret: accessTokenSecret
+    },
+    success: function( data, textStatus, jqXHR ){
+
+      if( data.error ) {
+        alert( "error: " + data.error );
+      }
+
+      window.draftpad.close();
+
+    },
+    error: function( jqXHR, textStatus, errorThrown ) {
+
+      $( "#waiting" ).hide();
+      alert( textStatus );
+      window.draftpad.close();
+
+    }
+  });
+
+}
+
+function parse( text ) {
+
+  var lines = text.split( /\n/ );
+  var path = "";
+  var bodyLines = [];
+
+  lines = lines.reverse();
+  var pathIsGetted = false;
+  var lastLineIsFounded = false;
+
+  $.each( lines, function () { 
+    if ( !pathIsGetted && this.match( /^ *(\/.*$)/ ) ) {
+      path = RegExp.$1;
+      pathIsGetted = true;
+    }
+    else if ( !pathIsGetted ) {
+      //disvalue
+    }
+    else if ( !lastLineIsFounded ) {
+      if ( this.match( /^ *$/ ) ) {
+        //disvalue
+      }
+      else {
+        bodyLines.push( this );
+        lastLineIsFounded = true;
+      }
+    }
+    else {
+      bodyLines.push( this );
+    }
+  });
+
+  bodyLines = bodyLines.reverse();
+
+  return { 
+    path: path, 
+    body: bodyLines.join( "\n" ) 
+  };
+
+}
+
+</script>
+</body>
+</html>
