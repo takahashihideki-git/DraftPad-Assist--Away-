@@ -1,1 +1,33 @@
-DraftPad Assist: for save text on draftpad to target path in Dropbox.
+DraftPad Assist "Away" : for save text on draftpad to target path in Dropbox.
+
+# これは何？
+
+Away は DraftPad という iPhone アプリの拡張機能です。
+DraftPad に書き込んだテキストを Dropbox の任意のパスに保存することができるようになります。
+
+↓こんなかんじで使います。
+
+http://chushoww.blogspot.com/2012/02/d-2.html
+
+Away は node.js で動作するWebアプリケーションです。
+これは、Away を dotCloud でホスティングするためのソースコード一式です。
+
+
+# 使い方:
+
+root/server.js の 以下の3箇所を書き換えて dotCloud の node.js 環境にそのまま配置すればすぐに使えます。
+
+<YOUR DOTCLOUD HOST NAME>
+<YOUR DROPBOX APP KEY>
+<YOUR DROPBOX APP KEY SECRET>
+
+http://<YOUR DOTCLOUD HOST NAME>.dotcloud.com/importer.html に、Away を DraftPad にインポートするためのリンクが掲載されています。
+
+# ただし、Dropbox の公開申請はリジェクトされます。
+
+理由は、下記のとおりです。
+
+http://chushoww.blogspot.com/2012/02/d-7.html
+
+しかし、開発者アカウント + 5アカウントまでなら利用することができます。
+
