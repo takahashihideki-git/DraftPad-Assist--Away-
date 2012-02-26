@@ -30,9 +30,7 @@ $( function () {
 
   $.each( $("a"), function () { 
 
-    console.log( $( this ).attr( "href") );  
     $( this ).attr( "href", $( this ).attr( "href" ).replace( /{host}/, encodeURIComponent( encodeURIComponent( window.location.host ) ) ) );
-    console.log( $( this ).attr( "href") );  
   
   })
 
