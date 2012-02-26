@@ -13,7 +13,7 @@ Away は node.js で動作するWebアプリケーションです。
 これは、Away を dotCloud でホスティングするためのソースコード一式です。
 
 
-# 使い方:
+# 使い方
 
 root/server.js の 以下の3箇所を書き換えて dotCloud の node.js 環境にそのまま配置すればすぐに使えます。
 
